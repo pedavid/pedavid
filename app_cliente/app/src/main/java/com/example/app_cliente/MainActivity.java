@@ -60,6 +60,32 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        db = Room.databaseBuilder(this,
+                AppDatabase.class, "constantes").allowMainThreadQueries().build();
+
+        constantes = db.constantesDao();
+
+        if( constantes.isNotEmpty() == false ){
+            Constantes kCalV = new Constantes();
+            Constantes kCalI = new Constantes();
+            Constantes ip = new Constantes();
+
+            kCalV.constante = "tension";
+            kCalI.constante = "corriente";
+            ip.constante = "direccion";
+            kCalV.valor = 1f;
+            kCalI.valor = 1f;
+            ip.valor = 0f;
+            kCalV.direccion = "0";
+            kCalI.direccion = "0";
+            ip.direccion = "http://127.0.0.1";
+
+
+            constantes.insertValues(kCalV);
+            constantes.insertValues(kCalI);
+            constantes.insertValues(ip);
+        }
+
         queue = Volley.newRequestQueue(this);   //inicializo la queue
 
         new Timer().scheduleAtFixedRate(new TimerTask() {
@@ -69,24 +95,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }, 0, 300);     //put here time 1000 milliseconds = 1 second
 
-        db = Room.databaseBuilder(this,
-                AppDatabase.class, "constantes").allowMainThreadQueries().build();
 
-        constantes = db.constantesDao();
-
-        if( constantes.isNotEmpty() == false ){
-            Constantes kCalV = new Constantes();
-            Constantes kCalI = new Constantes();
-
-            kCalV.constante = "tension";
-            kCalI.constante = "corriente";
-            kCalV.valor = 1f;
-            kCalI.valor = 1f;
-
-
-            constantes.insertValues(kCalV);
-            constantes.insertValues(kCalI);
-        }
     }
 
     @Override
@@ -114,8 +123,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void obtenerDatosVolley(){   //Nuevo metodo con logica para obtener json
-        String url = "http://192.168.1.239";
-
+        //String url = "http://192.168.1.189";
+        List listaCte = constantes.getAll();
+        String url_db = ((Constantes) listaCte.get(2)).direccion.toString();
+        String url = url_db;
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
 
             @RequiresApi(api = Build.VERSION_CODES.N)

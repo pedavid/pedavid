@@ -1,5 +1,7 @@
 package com.example.app_cliente;
 
+import android.text.Editable;
+
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
@@ -27,4 +29,7 @@ public class Constantes {
 
     @ColumnInfo(name = "valor")
     public Float valor;
+
+    @ColumnInfo(name = "direccion")
+    public String direccion;
 }

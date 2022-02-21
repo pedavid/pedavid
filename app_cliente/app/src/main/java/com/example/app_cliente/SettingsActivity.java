@@ -27,6 +27,7 @@ public class SettingsActivity extends AppCompatActivity {
 
     private EditText textKV;
     private EditText textKI;
+    private EditText textIP;
 
     private AppDatabase db;
     private ConstantesDao constantes;
@@ -47,6 +48,7 @@ public class SettingsActivity extends AppCompatActivity {
                 newkCalV.uid = 1;
                 newkCalV.constante = "tension";
                 newkCalV.valor = Float.parseFloat( textKV.getText().toString() );
+                newkCalV.direccion = "0";
 
                 constantes.insertValues(newkCalV);
 
@@ -69,8 +71,32 @@ public class SettingsActivity extends AppCompatActivity {
                 newkCalI.uid = 2;
                 newkCalI.constante = "corriente";
                 newkCalI.valor = Float.parseFloat( textKI.getText().toString() );
+                newkCalI.direccion = "0";
 
                 constantes.insertValues(newkCalI);
+
+                if (!hasFocus) {
+                    {
+                        // Validate youredittext
+                    }
+                }
+            }
+        });
+
+        textIP = (EditText) findViewById(R.id.text_ip);
+        textIP.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+
+                Constantes newIp = new Constantes();
+
+                newIp.uid = 3;
+                newIp.constante = "ip";
+                newIp.valor = Float.parseFloat("1");
+                newIp.direccion = textIP.getText().toString();
+
+                constantes.insertValues(newIp);
 
                 if (!hasFocus) {
                     {
@@ -88,6 +114,7 @@ public class SettingsActivity extends AppCompatActivity {
 
         textKV.setText( ((Constantes) listaCte.get(0)).valor.toString() );
         textKI.setText( ((Constantes) listaCte.get(1)).valor.toString() );
+        textIP.setText( ((Constantes) listaCte.get(2)).direccion.toString() );
     }
 
     @Override
