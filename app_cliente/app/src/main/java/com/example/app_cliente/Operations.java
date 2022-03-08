@@ -16,10 +16,11 @@ public class Operations {
     private double currentRmsValue = 0.0;
     private double voltageRmsValue = 0.0;
     private double apparentPowerValue = 0.0;
-    private double activePowerValue = 0.0;
+    public double activePowerValue = 0.0;
     private double powerFactor = 0.0;
     private ArrayList mafBufferI = new ArrayList<Double>();
     private ArrayList mafBufferV = new ArrayList<Double>();
+    private ArrayList mafBufferW = new ArrayList<Double>();
 
     public double getCurrentMeanValue(){return currentMeanValue;}
     public double getVoltageMeanValue(){return voltageMeanValue;}
@@ -61,10 +62,13 @@ public class Operations {
     }
 
     public double apparentPowerValue(){
-
             this.apparentPowerValue = currentRmsValue * voltageRmsValue;
+            double error = linearInterpolationError(this.apparentPowerValue);
+            return this.apparentPowerValue + error;
+    }
 
-            return this.apparentPowerValue;
+    private double linearInterpolationError(double s){
+        return((-0.11925*s) + 94.26);
     }
 
     public double activePowerValue(int[] voltage, int[] current){
@@ -97,7 +101,7 @@ public class Operations {
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     public double movingAvergeFilterVol( double vef ) {
-        if( mafBufferV.size() < 6 ) {
+        if( mafBufferV.size() < 10 ) {
             if (mafBufferV.size() == 0) mafBufferV.add( vef );
 
             else mafBufferV.add( mafBufferV.size(), vef );
@@ -115,7 +119,7 @@ public class Operations {
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     public double movingAvergeFilterCur ( double vef ) {
-        if( mafBufferI.size() < 6 ) {
+        if( mafBufferI.size() < 10 ) {
             if (mafBufferI.size() == 0) mafBufferI.add( vef );
 
             else mafBufferI.add( mafBufferI.size(), vef );
@@ -128,6 +132,26 @@ public class Operations {
             mafBufferI.add( mafBufferI.size(), vef );
 
             return ( mafBufferI.stream().mapToDouble(i -> (double) i).sum() / mafBufferI.size() );
+        }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public double movingAvergeFilterW ( double vef ) {
+        if( mafBufferW.size() < 10 ) {
+            if (mafBufferW.size() == 0) mafBufferW.add( vef );
+
+            else mafBufferW.add( mafBufferW.size(), vef );
+
+            return ( mafBufferW.stream().mapToDouble(i -> (double) i).sum() / mafBufferW.size() );
+        }
+
+        else {
+            mafBufferW.remove(0);
+            mafBufferW.add( mafBufferW.size(), vef );
+
+            this.activePowerValue = mafBufferW.stream().mapToDouble(i -> (double) i).sum() / mafBufferW.size();
+
+            return this.activePowerValue;
         }
     }
 }

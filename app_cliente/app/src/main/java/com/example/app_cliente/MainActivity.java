@@ -93,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
             public void run() {
                 obtenerDatosVolley();
             }
-        }, 0, 300);     //put here time 1000 milliseconds = 1 second
+        }, 0, 600);     //put here time 1000 milliseconds = 1 second
 
 
     }
@@ -173,23 +173,20 @@ public class MainActivity extends AppCompatActivity {
         new Handler(Looper.getMainLooper()).post(new Runnable(){
             @Override
             public void run() {
-                TextView textPot = (TextView) findViewById(R.id.displayPot);
                 TextView textVef = (TextView) findViewById(R.id.displayVef);
                 TextView textIef = (TextView) findViewById(R.id.displayIef);
-                TextView textPwdFact = (TextView) findViewById(R.id.displayPwdFactor);
+                TextView textAppPow = (TextView) findViewById(R.id.displayAppPot);
                 double aux;
-                aux = ( operations.activePowerValue(arrayTension, arrayCorriente) );
-                String aux2 = String.format("%.2f", aux);
-                textPot.setText( aux2 + " W");
+                String aux2;
                 aux = ( operations.getVoltageRmsValue() );
                 aux2 = String.format("%.2f", aux);
                 textVef.setText( aux2 + " V" );
                 aux = ( operations.getCurrentRmsValue() );
                 aux2 = String.format("%.2f", aux);
                 textIef.setText( aux2 + " A" );
-                aux = ( operations.powerFactorValue() );
+                aux = (operations.apparentPowerValue() );
                 aux2 = String.format("%.2f", aux);
-                textPwdFact.setText( aux2 );
+                textAppPow.setText( aux2 + " VA");
             }
         });
 
@@ -199,6 +196,7 @@ public class MainActivity extends AppCompatActivity {
     private void mathematicalOperations(){
         double vefTension = operations.rmsValue(arrayTension);
         double vefCorriente = operations.rmsValue(arrayCorriente);
+        double potenciaActiva = operations.activePowerValue(arrayTension, arrayCorriente);
 
         List listaCte = constantes.getAll();
 
@@ -211,9 +209,11 @@ public class MainActivity extends AppCompatActivity {
         operations.setVoltageRmsValue(  operations.movingAvergeFilterVol(vefTension) * cteV );
         Log.d("Tension rms recibida", "mathematicalOperations: "+ vefTension);
 
+
+
         Log.d("Tension eficaz", "" + operations.getVoltageRmsValue());
         Log.d("Potencia aparente",  operations.apparentPowerValue() +"VA");
-        Log.d("Potencia aparente",  operations.activePowerValue(arrayTension, arrayCorriente) +"W");
+        Log.d("Potencia activa",  operations.movingAvergeFilterW(potenciaActiva) +"W");
         Log.d("Factor de Potencia", "" + operations.powerFactorValue());
 
        // Log.d("Potencia aparente", operations.apparentPower(bufferTension.asInt(), bufferCorriente.asInt()) +"VA");
