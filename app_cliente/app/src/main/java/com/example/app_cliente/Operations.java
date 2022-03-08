@@ -64,7 +64,7 @@ public class Operations {
     public double apparentPowerValue(){
             this.apparentPowerValue = currentRmsValue * voltageRmsValue;
             double error = linearInterpolationError(this.apparentPowerValue);
-            return this.apparentPowerValue + error;
+            return this.apparentPowerValue - error;
     }
 
     private double linearInterpolationError(double s){
